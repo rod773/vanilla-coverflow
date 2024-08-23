@@ -36,6 +36,7 @@ $maxImages: 10;
   perspective: $perspective;
 
   &__image {
+    cursor: pointer;
     user-select: none;
     width: $imageW;
     height: $imageH;
