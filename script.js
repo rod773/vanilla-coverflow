@@ -46,9 +46,9 @@ window.addEventListener("keyup", (evt) => {
 
 window.addEventListener("scroll", (event) => {
   //console.log(this.oldScroll > this.scrollY);
-  if (this.oldScroll > this.scrollY) {
+  if (this.oldScroll - this.scrollY > 5) {
     prevArrow.click();
-  } else nextArrow.click();
+  } else if (this.oldScroll - this.scrollY < -5) nextArrow.click();
 
   this.oldScroll = this.scrollY;
 });
