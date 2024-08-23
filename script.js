@@ -46,7 +46,9 @@ window.addEventListener("keyup", (evt) => {
 
 window.addEventListener("scroll", (event) => {
   //console.log(this.oldScroll > this.scrollY);
-  if (this.oldScroll > this.scrollY) viewPrevImage();
-  else viewNextImage();
+  if (this.oldScroll > this.scrollY) {
+    prevArrow.click();
+  } else nextArrow.click();
+
   this.oldScroll = this.scrollY;
 });
