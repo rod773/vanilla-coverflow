@@ -1,0 +1,139 @@
+body {
+  background: #081014;
+}
+
+//////////////////////////////
+// Coverflow styles
+//////////////////////////////
+$imageW: 400px;
+$imageH: 300px;
+
+$transitionSpeed: 350ms;
+$transitionEasing: cubic-bezier(0.215, 0.61, 0.355, 1); /* easeOutCubic */
+
+$nonfocusSpacing: 90px;
+$focusMargin: 210px;
+$maxNonfocusOpacity: 0.5;
+$maxNonfocusScale: 0.5;
+$minNonfocusScale: 0.2;
+$numNonfocusVisible: 3;
+
+$centerGlow: 0 1px 25px 10px rgba(#000000, 0.6);
+$perspective: 1000px;
+$leftTransform: rotateY(45deg);
+$rightTransform: rotateY(-45deg);
+
+$maxImages: 10;
+
+// Main Styles
+.coverflow {
+  position: relative;
+  height: $imageH;
+  padding: 3rem;
+  overflow: hidden;
+  perspective: $perspective;
+
+  &__image {
+    user-select: none;
+    width: $imageW;
+    height: $imageH;
+    transition: all $transitionSpeed $transitionEasing;
+    &[data-coverflow-index] {
+      position: absolute;
+      left: 50%;
+      transform-origin: 50% 50%;
+      &:before {
+        content: " ";
+        z-index: 1;
+        position: absolute;
+        top: 300px;
+        width: 100%;
+        height: 10%;
+        box-shadow: 0 0 30px rgba(#000000, 0.7);
+      }
+    }
+  }
+
+  @for $x from 1 through $maxImages {
+    &[data-coverflow-position="#{$x}"] {
+      @for $y from 1 through $maxImages {
+        @if ($y < $x) {
+          //left
+          $dist: $x - $y;
+          .coverflow__image[data-coverflow-index="#{$y}"] {
+            z-index: $maxImages - $dist;
+            $scale: (
+                (($maxNonfocusScale - $minNonfocusScale) / ($numNonfocusVisible - 1)) *
+                  ($numNonfocusVisible - ($dist - 1))
+              ) +
+              $minNonfocusScale;
+            $translateX: (-1 * $nonfocusSpacing * ($dist - 1)) - ($imageW / 2) - $focusMargin;
+            transform: translateX($translateX) scale($scale) $leftTransform;
+            opacity: ($maxNonfocusOpacity / $numNonfocusVisible) * ($numNonfocusVisible - ($dist - 1));
+          }
+        }
+        @if ($y == $x) {
+          //center (focus)
+          .coverflow__image[data-coverflow-index="#{$y}"] {
+            z-index: $maxImages;
+            transform: translateX(-1 * ($imageW / 2));
+            box-shadow: $centerGlow;
+          }
+        }
+        @if ($y > $x) {
+          //right
+          $dist: $y - $x;
+          .coverflow__image[data-coverflow-index="#{$y}"] {
+            z-index: $maxImages - $dist;
+            $scale: (
+                (($maxNonfocusScale - $minNonfocusScale) / ($numNonfocusVisible - 1)) *
+                  ($numNonfocusVisible - ($dist - 1))
+              ) +
+              $minNonfocusScale;
+            $translateX: ($nonfocusSpacing * ($dist - 1)) - ($imageW / 2) + $focusMargin;
+            transform: translateX($translateX) scale($scale) $rightTransform;
+            opacity: ($maxNonfocusOpacity / $numNonfocusVisible) * ($numNonfocusVisible - ($dist - 1));
+          }
+        }
+      }
+    }
+  }
+}
+
+// Arrows
+%arrow-control {
+  cursor: pointer;
+  z-index: $maxImages;
+  position: absolute;
+  top: 50%;
+  padding: 1.5rem 2rem;
+  color: rgba(#ffffff, 0.5);
+  font-size: 3rem;
+  line-height: 3rem;
+  background: rgba(#000000, 0);
+  border-radius: 1rem;
+  transform-origin: 50% 50%;
+  transform: translateY(-50%);
+  transition:
+    color 200ms,
+    background 200ms;
+  &:hover,
+  &:focus {
+    color: rgba(#ffffff, 0.9);
+    background: rgba(#000000, 0.5);
+  }
+}
+.prev-arrow {
+  @extend %arrow-control;
+  left: 5%;
+  &:before {
+    content: "❮";
+  }
+}
+.next-arrow {
+  @extend %arrow-control;
+  right: 5%;
+  &:after {
+    content: "❯";
+  }
+}
